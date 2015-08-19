@@ -1,0 +1,146 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>psidev.psi.tools</groupId>
+        <artifactId>master-pom</artifactId>
+        <version>4</version>
+    </parent>
+
+    <groupId>psidev.psi.tools</groupId>
+    <artifactId>xxindex</artifactId>
+    <packaging>bundle</packaging>
+    <version>0.15-SNAPSHOT</version>
+
+    <name>PSI :: Tools :: Xml XPath Indexer</name>
+
+    <properties>
+        <!-- OSGi bundle names -->
+        <bundle.namespace>psidev.psi.tools.xxindex</bundle.namespace>
+        <bundle.symbolicName>psidev.psi.tools.xxindex</bundle.symbolicName>
+    </properties>
+
+    <scm>
+        <connection>scm:svn:https://psidev.svn.sourceforge.net/svnroot/psidev/psi/tools/xxindex/trunk</connection>
+        <developerConnection>scm:svn:https://psidev.svn.sourceforge.net/svnroot/psidev/psi/tools/xxindex/trunk</developerConnection>
+        <url>https://psidev.svn.sourceforge.net/svnroot/psidev/psi/tools/xxindex/trunk</url>
+    </scm>
+
+    <build>
+       <plugins>
+            <plugin>
+                <groupId>org.ops4j</groupId>
+                <artifactId>maven-pax-plugin</artifactId>
+                <!--
+                 | enable improved OSGi compilation support for the bundle life-cycle.
+                 | to switch back to the standard bundle life-cycle, move this setting
+                 | down to the maven-bundle-plugin section
+                -->
+                <extensions>true</extensions>
+            </plugin>
+            <plugin>
+                <!--
+                 | the following instructions build a simple set of public/private classes into an OSGi bundle
+                -->
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Bundle-SymbolicName>${bundle.symbolicName}</Bundle-SymbolicName>
+                        <Bundle-Version>${pom.version}</Bundle-Version>
+                        <!--
+                         | assume public classes are in the top package, and private classes are under ".internal"
+                        -->
+                        <Export-Package>
+                            !${bundle.namespace}.internal.*,
+                             ${bundle.namespace}.*;version="${pom.version}",
+                        </Export-Package>
+                        <Private-Package>
+                             ${bundle.namespace}.internal.*,
+                             info.monitorenter.cpdetector.*,
+                             info.monitorenter.cpdetector.io.*,
+                             jargs.*,
+                             org.mozilla.*,
+                             antlr.*,
+                             com.sun.jdmk.* 
+                        </Private-Package>
+
+                        <!--
+                         | each module can override these defaults in their osgi.bnd file
+                        -->
+                        <_include>-osgi.bnd</_include>
+                    </instructions>
+                </configuration>
+            </plugin>
+         </plugins>
+    </build>
+
+    <dependencies>
+        <!-- for CountingInputStream -->
+        <dependency>  
+             <groupId>org.apache.commons</groupId>  
+             <artifactId>com.springsource.org.apache.commons.io</artifactId>  
+             <version>1.4.0</version> 
+        </dependency>
+
+        <!-- for file encoding detection -->
+        <dependency>
+            <groupId>cpdetector</groupId>
+            <artifactId>cpdetector</artifactId>
+            <version>1.0.7</version>
+        </dependency>
+
+        <!-- OSGi -->
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
+            <version>4.2.0</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.compendium</artifactId>
+            <version>4.2.0</version>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- for unit testing -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.3.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>uk.ac.ebi.pride.util</groupId>
+            <artifactId>pride-core-utils</artifactId>
+            <version>1.0</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Third party -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>com.springsource.org.apache.commons.logging</artifactId>
+            <version>1.1.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.log4j</groupId>
+            <artifactId>com.springsource.org.apache.log4j</artifactId>
+            <version>1.2.15</version>
+        </dependency>
+
+    </dependencies>
+
+    <repositories>
+        <repository>
+            <id>intact.nexus</id>
+            <name>IntAct Nexus</name>
+            <url>http://www.ebi.ac.uk/intact/maven/nexus/content/groups/public/</url>
+        </repository>
+    </repositories>
+
+</project>

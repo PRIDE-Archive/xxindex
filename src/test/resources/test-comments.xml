@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<first>
+    <second>
+        <third>
+            <fourth>!"£$%^*()_+</fourth>
+        </third>
+		<!-- -->
+        <third>
+            <fourth>ñÑóúÁÉÍÚÓ</fourth>
+        </third>
+		<!--
+		<third>
+			<fourth>blabla</fourth>
+		</third>
+		-->
+        <third>
+            <fourth>;:'@#~[{]},.?/</fourth>
+            <fourth>HelloWorld</fourth>
+        </third>
+    </second>
+    <!-- normal comment -->
+    <second>
+        <third>
+            <fourth>`¬¦|\/</fourth>
+        </third>
+    </second>
+</first>

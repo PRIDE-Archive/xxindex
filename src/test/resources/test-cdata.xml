@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<first>
+    <second>
+        <third>
+            <fourth>!"£$%^*()_+</fourth>
+        </third>
+		<SiteRegexp><![CDATA[(?<=[KR])(?!P)]]></SiteRegexp>
+        <third>
+            <fourth>ñÑóúÁÉÍÚÓ</fourth>
+        </third>
+		<!--
+		<third>
+			<fourth>blabla</fourth>
+		</third>
+		-->
+        <third>
+            <fourth>;:'@#~[{]},.?/</fourth>
+            <fourth>HelloWorld</fourth>
+            <![CDATA[(?<=[KR])(?!P)]]>
+        </third>
+    </second>
+    <!-- normal comment -->
+    <second>
+        <!--<![CDATA[(?<=[KR])(?!P)]]>-->
+        <third>
+            <fourth>`¬¦|\/</fourth>
+        </third>
+        <!--
+        <![CDATA[(?<=[KR])(?!P)]]>
+        -->
+        <![CDATA[<!-- comment in CDATA -->]]>
+    </second>
+</first>
