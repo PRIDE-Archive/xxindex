@@ -4,6 +4,8 @@ import info.monitorenter.cpdetector.io.ASCIIDetector;
 import info.monitorenter.cpdetector.io.CodepageDetectorProxy;
 import info.monitorenter.cpdetector.io.JChardetFacade;
 import info.monitorenter.cpdetector.io.ParsingDetector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import psidev.psi.tools.xxindex.index.IndexElement;
 
 import java.io.*;
@@ -13,8 +15,6 @@ import java.nio.charset.IllegalCharsetNameException;
 import java.nio.charset.UnsupportedCharsetException;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * Author: Florian Reisinger
@@ -23,7 +23,7 @@ import org.apache.commons.logging.LogFactory;
 @Deprecated
 public class StandardXmlElementExtractor implements XmlElementExtractor {
 
-    private static final Log log = LogFactory.getLog( StandardXmlElementExtractor.class );
+    Logger log = LoggerFactory.getLogger(StandardXmlElementExtractor.class);
 
     private boolean compareWithDetect;
     private boolean preferDetect;

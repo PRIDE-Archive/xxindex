@@ -1,8 +1,9 @@
 package psidev.psi.tools.xxindex.index;
 
 import org.apache.commons.io.input.CountingInputStream;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -25,7 +26,7 @@ import java.util.Stack;
  */
 public class XmlXpathIndexer {
 
-    private static final Log log = LogFactory.getLog( XmlXpathIndexer.class );
+    private static Logger log = LoggerFactory.getLogger(XmlXpathIndexer.class);
 
     private static final char[] HEX_CHARS = "0123456789abcdef".toCharArray();
 
@@ -137,7 +138,7 @@ public class XmlXpathIndexer {
         StandardXpathIndex index = new StandardXpathIndex(aXpathInclusionSet);
 
         // create a index that will or will not record the line number according to the specification
-        if ( log.isDebugEnabled() ) {
+        if ( log.isDebugEnabled()) {
             log.debug( "Indexing " + (recordLineNumber ? "and" : "without") + " keeping track of line numbers." );
         }
 

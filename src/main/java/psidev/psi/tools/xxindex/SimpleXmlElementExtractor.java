@@ -1,8 +1,10 @@
 package psidev.psi.tools.xxindex;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import psidev.psi.tools.xxindex.index.IndexElement;
+import sun.java2d.pipe.SpanShapeRenderer;
 
 import java.io.*;
 import java.net.URL;
@@ -24,7 +26,7 @@ import java.util.regex.Pattern;
  */
 public class SimpleXmlElementExtractor implements XmlElementExtractor {
 
-    private static final Log log = LogFactory.getLog( SimpleXmlElementExtractor.class );
+    private  static final Logger log = LoggerFactory.getLogger(SimpleXmlElementExtractor.class);
 
 // XML 1.1 specs
 // [3]  S            ::=  (#x20 | #x9 | #xD | #xA)+             /* spaces, carriage returns, line feeds, or tabs */

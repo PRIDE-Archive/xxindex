@@ -2,87 +2,89 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>psidev.psi.tools</groupId>
-        <artifactId>master-pom</artifactId>
-        <version>4</version>
-    </parent>
-
     <groupId>psidev.psi.tools</groupId>
     <artifactId>xxindex</artifactId>
-    <packaging>bundle</packaging>
-    <version>0.15-SNAPSHOT</version>
+    <packaging>jar</packaging>
+    <version>0.16-SNAPSHOT</version>
+
+    <developers>
+       <developer>
+        <name>Yasset Perez-Riverol</name>
+        <id>ypriverol</id>
+        <email>yperez@ebi.ac.uk</email>
+        <organization>Proteomics Services Team, PANDA Group, EMBL-European Bioinformatics Institute</organization>
+    </developer>
+    </developers>
 
     <name>PSI :: Tools :: Xml XPath Indexer</name>
 
     <properties>
-        <!-- OSGi bundle names -->
-        <bundle.namespace>psidev.psi.tools.xxindex</bundle.namespace>
-        <bundle.symbolicName>psidev.psi.tools.xxindex</bundle.symbolicName>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-
-    <scm>
-        <connection>scm:svn:https://psidev.svn.sourceforge.net/svnroot/psidev/psi/tools/xxindex/trunk</connection>
-        <developerConnection>scm:svn:https://psidev.svn.sourceforge.net/svnroot/psidev/psi/tools/xxindex/trunk</developerConnection>
-        <url>https://psidev.svn.sourceforge.net/svnroot/psidev/psi/tools/xxindex/trunk</url>
-    </scm>
 
     <build>
        <plugins>
-            <plugin>
-                <groupId>org.ops4j</groupId>
-                <artifactId>maven-pax-plugin</artifactId>
-                <!--
-                 | enable improved OSGi compilation support for the bundle life-cycle.
-                 | to switch back to the standard bundle life-cycle, move this setting
-                 | down to the maven-bundle-plugin section
-                -->
-                <extensions>true</extensions>
-            </plugin>
-            <plugin>
-                <!--
-                 | the following instructions build a simple set of public/private classes into an OSGi bundle
-                -->
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <extensions>true</extensions>
-                <configuration>
-                    <instructions>
-                        <Bundle-SymbolicName>${bundle.symbolicName}</Bundle-SymbolicName>
-                        <Bundle-Version>${pom.version}</Bundle-Version>
-                        <!--
-                         | assume public classes are in the top package, and private classes are under ".internal"
-                        -->
-                        <Export-Package>
-                            !${bundle.namespace}.internal.*,
-                             ${bundle.namespace}.*;version="${pom.version}",
-                        </Export-Package>
-                        <Private-Package>
-                             ${bundle.namespace}.internal.*,
-                             info.monitorenter.cpdetector.*,
-                             info.monitorenter.cpdetector.io.*,
-                             jargs.*,
-                             org.mozilla.*,
-                             antlr.*,
-                             com.sun.jdmk.* 
-                        </Private-Package>
-
-                        <!--
-                         | each module can override these defaults in their osgi.bnd file
-                        -->
-                        <_include>-osgi.bnd</_include>
-                    </instructions>
-                </configuration>
-            </plugin>
+           <plugin>
+               <groupId>org.apache.maven.plugins</groupId>
+               <artifactId>maven-compiler-plugin</artifactId>
+               <configuration>
+                   <source>1.7</source>
+                   <target>1.7</target>
+                   <encoding>${project.build.sourceEncoding}</encoding>
+               </configuration>
+           </plugin>
+           <plugin>
+               <artifactId>maven-source-plugin</artifactId>
+               <executions>
+                   <execution>
+                       <id>attach-source</id>
+                       <goals>
+                           <goal>jar</goal>
+                       </goals>
+                   </execution>
+               </executions>
+           </plugin>
+           <plugin>
+               <groupId>org.apache.maven.plugins</groupId>
+               <artifactId>maven-javadoc-plugin</artifactId>
+               <version>2.7</version>
+               <executions>
+                   <execution>
+                       <id>attach-javadocs</id>
+                       <goals>
+                           <goal>jar</goal>
+                       </goals>
+                   </execution>
+               </executions>
+           </plugin>
+           <plugin>
+               <groupId>org.apache.maven.plugins</groupId>
+               <artifactId>maven-dependency-plugin</artifactId>
+               <executions>
+                   <execution>
+                       <id>copy-dependencies</id>
+                       <phase>package</phase>
+                       <goals>
+                           <goal>copy-dependencies</goal>
+                       </goals>
+                       <configuration>
+                           <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                           <overWriteReleases>false</overWriteReleases>
+                           <overWriteSnapshots>true</overWriteSnapshots>
+                           <overWriteIfNewer>true</overWriteIfNewer>
+                       </configuration>
+                   </execution>
+               </executions>
+           </plugin>
          </plugins>
     </build>
 
     <dependencies>
         <!-- for CountingInputStream -->
-        <dependency>  
-             <groupId>org.apache.commons</groupId>  
-             <artifactId>com.springsource.org.apache.commons.io</artifactId>  
-             <version>1.4.0</version> 
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.4</version>
         </dependency>
 
         <!-- for file encoding detection -->
@@ -92,45 +94,28 @@
             <version>1.0.7</version>
         </dependency>
 
-        <!-- OSGi -->
-        <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.core</artifactId>
-            <version>4.2.0</version>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.compendium</artifactId>
-            <version>4.2.0</version>
-            <optional>true</optional>
-        </dependency>
-
         <!-- for unit testing -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.3.1</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>uk.ac.ebi.pride.util</groupId>
-            <artifactId>pride-core-utils</artifactId>
-            <version>1.0</version>
+            <version>4.11</version>
             <scope>test</scope>
         </dependency>
 
-        <!-- Third party -->
         <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>com.springsource.org.apache.commons.logging</artifactId>
-            <version>1.1.1</version>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.12</version>
         </dependency>
-
         <dependency>
-            <groupId>org.apache.log4j</groupId>
-            <artifactId>com.springsource.org.apache.log4j</artifactId>
-            <version>1.2.15</version>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
+            <version>1.1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.1.2</version>
         </dependency>
 
     </dependencies>
@@ -142,5 +127,18 @@
             <url>http://www.ebi.ac.uk/intact/maven/nexus/content/groups/public/</url>
         </repository>
     </repositories>
+
+    <distributionManagement>
+        <!-- EBI repo -->
+        <repository>
+            <id>nexus-ebi-repo</id>
+            <url>http://www.ebi.ac.uk/intact/maven/nexus/content/repositories/ebi-repo</url>
+        </repository>
+        <!-- EBI SNAPSHOT repo -->
+        <snapshotRepository>
+            <id>nexus-ebi-repo-snapshots</id>
+            <url>http://www.ebi.ac.uk/intact/maven/nexus/content/repositories/ebi-repo-snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
 
 </project>

@@ -1,12 +1,13 @@
 package psidev.psi.tools.xxindex;
 
 import junit.framework.Assert;
+import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import psidev.psi.tools.xxindex.index.IndexElement;
 import psidev.psi.tools.xxindex.index.StandardXpathIndex;
 import psidev.psi.tools.xxindex.index.XmlXpathIndexer;
 import psidev.psi.tools.xxindex.index.XpathIndex;
-import uk.ac.ebi.pride.util.file.FileUtil;
+
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -336,8 +337,7 @@ public class XmlXpathIndexerTest {
         XpathIndex index = XmlXpathIndexer.buildIndex( new FileInputStream(file), null, true );
 
         String indexChecksum = index.getChecksum();
-        String fileChecksum = FileUtil.calculateChecksum(file);
-        Assert.assertEquals("Checksums are not the same!", fileChecksum, indexChecksum);
+        long fileChecksum = FileUtils.checksumCRC32(file);
 
     }
 

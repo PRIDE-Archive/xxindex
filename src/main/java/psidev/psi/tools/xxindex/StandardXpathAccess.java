@@ -1,12 +1,14 @@
 package psidev.psi.tools.xxindex;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import psidev.psi.tools.xxindex.index.*;
 
 import java.io.*;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
 import java.util.*;
 import java.util.zip.GZIPInputStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Author: Florian Reisinger
@@ -14,13 +16,15 @@ import java.util.zip.GZIPInputStream;
  */
 public class StandardXpathAccess implements XpathAccess {
 
-    private static final Log log = LogFactory.getLog(StandardXpathAccess.class);
+    Logger logger = LoggerFactory.getLogger(StandardXpathAccess.class);
+
 
     private File file;
     private XpathIndex index;
     private XmlElementExtractor extractor;
     private boolean ignoreNSPrefix = true;
     private boolean isGzFile;
+    private FileInputStream fis = null;
 
     ////////////////////
     // Constructors
@@ -75,7 +79,7 @@ public class StandardXpathAccess implements XpathAccess {
         }
 
         this.file = file;
-        FileInputStream fis = new FileInputStream(file);
+        fis = new FileInputStream(file);
 
         // choosing the Extractor to use
         if (file.getName().endsWith(".gz")) {
@@ -166,7 +170,7 @@ public class StandardXpathAccess implements XpathAccess {
             }
         } else {
             // Error message
-            log.info("The index does not contain any entry for the requested xpath: " + xpath);
+            logger.info("The index does not contain any entry for the requested xpath: " + xpath);
         }
         return results;
     }
@@ -202,7 +206,7 @@ public class StandardXpathAccess implements XpathAccess {
 
             iter = new XmlSnippetIterator(ranges, extractor, file, start, stop);
         } else {
-            log.info("The index does not contain any entry for the requested xpath: " + xpath);
+            logger.info("The index does not contain any entry for the requested xpath: " + xpath);
             // return iterator over empty list
             List<String> s = Collections.emptyList();
             iter = s.iterator();
@@ -237,7 +241,6 @@ public class StandardXpathAccess implements XpathAccess {
         long startPos = element.getStart();
 
         InputStream stream = null;
-        FileInputStream fis = null;
         try {
             fis = new FileInputStream(file);
 
@@ -249,7 +252,8 @@ public class StandardXpathAccess implements XpathAccess {
                     throw new IllegalStateException("Could not position at requested location, reading compromised! Location: " + startPos);
                 }
             } else {
-                fis.getChannel().position(startPos);
+                FileChannel fc = fis.getChannel();
+                fc.position(startPos);
                 stream = new BufferedInputStream(fis, 1048576); // 1MB read buffer
             }
 
@@ -269,9 +273,9 @@ public class StandardXpathAccess implements XpathAccess {
 
         } finally {
             try {
-                if (fis != null) {
-                    fis.close();
-                }
+//                if (fis != null) {
+//                    fis.close();
+//                }
                 if (stream != null) {
                     stream.close();
                 }
@@ -391,7 +395,7 @@ public class StandardXpathAccess implements XpathAccess {
             }
         } else {
             // Error message
-            log.info("The index does not contain any entry for the requested xpath: " + xpath);
+            logger.info("The index does not contain any entry for the requested xpath: " + xpath);
         }
         return results;
     }
@@ -429,7 +433,7 @@ public class StandardXpathAccess implements XpathAccess {
             iter = new XmlElementIterator(elements, extractor, file, start, stop);
         } else {
             // Error message
-            log.info("The index does not contain any entry for the requested xpath: " + xpath);
+            logger.info("The index does not contain any entry for the requested xpath: " + xpath);
             // return iterator over empty list
             List<XmlElement> s = Collections.emptyList();
             iter = s.iterator();
