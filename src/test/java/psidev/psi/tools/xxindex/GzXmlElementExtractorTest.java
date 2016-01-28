@@ -42,9 +42,9 @@ public class GzXmlElementExtractorTest {
         IndexElement element = indexElements.get(0);
         Assert.assertNotNull(element);
 
-        GzXmlElementExtractor extractor = new GzXmlElementExtractor();
+        GzXmlElementExtractor extractor = new GzXmlElementExtractor(xmlFile);
 
-        String readString = extractor.readString(element.getStart(), element.getStop(), xmlFile);
+        String readString = extractor.readString(element.getStart(), element.getStop());
         // check that we are in the right area
         Assert.assertTrue(readString.contains("researcher"));
         // now check that we have everything from the start tag
@@ -60,7 +60,7 @@ public class GzXmlElementExtractorTest {
         element = indexElements.get(0);
         Assert.assertNotNull(element);
 
-        readString = extractor.readString(element.getStart(), element.getStop(), xmlFile);
+        readString = extractor.readString(element.getStart(), element.getStop());
         // check that we are in the right area
         Assert.assertTrue(readString.contains("David M. Creasy"));
         // now check that we have everything from the start tag
@@ -99,13 +99,13 @@ public class GzXmlElementExtractorTest {
         IndexElement element = indexElements.get(0);
         Assert.assertNotNull(element);
 
-        GzXmlElementExtractor extractor = new GzXmlElementExtractor();
 
         // this should throw an exception
         String readString = null;
         caughtException = false;
         try {
-            readString = extractor.readString(element.getStart(), element.getStop(), xmlFile);
+            GzXmlElementExtractor extractor = new GzXmlElementExtractor(xmlFile);
+            readString = extractor.readString(element.getStart(), element.getStop());
             Assert.fail("We should have never got to this point! (using a GzExtractor on a non-gz file)");
         } catch (IllegalArgumentException iae) {
             caughtException = true;

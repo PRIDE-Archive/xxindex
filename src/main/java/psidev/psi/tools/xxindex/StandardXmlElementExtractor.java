@@ -21,7 +21,7 @@ import java.util.Set;
  * Date: 24-Jul-2007
  */
 @Deprecated
-public class StandardXmlElementExtractor implements XmlElementExtractor {
+public class StandardXmlElementExtractor {
 
     Logger log = LoggerFactory.getLogger(StandardXmlElementExtractor.class);
 

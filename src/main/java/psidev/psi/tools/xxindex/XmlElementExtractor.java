@@ -1,6 +1,5 @@
 package psidev.psi.tools.xxindex;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
@@ -12,9 +11,9 @@ import java.net.URL;
 public interface XmlElementExtractor {
     int setEncoding(String encoding);
 
-    byte[] readBytes(long from, long to, File file) throws IOException;
+    byte[] readBytes(long from, long to) throws IOException;
 
-    String readString(long from, long to, File file) throws IOException;
+    String readString(long from, long to) throws IOException;
 
     String detectFileEncoding(URL fileLocation) throws IOException;
 

@@ -31,11 +31,11 @@ public class XmlXpathIndexerTest {
     private String readByteRange( long from, long to, String filename, String encoding ) throws Exception {
         URL url = XmlXpathIndexerTest.class.getResource( filename );
         File f = new File( url.toURI() );
-        SimpleXmlElementExtractor xee = new SimpleXmlElementExtractor();
+        SimpleXmlElementExtractor xee = new SimpleXmlElementExtractor(f);
         if (encoding != null) {
             xee.setEncoding( encoding );
         }
-        return xee.readString( from, to, f );
+        return xee.readString( from, to );
     }
 
     private List<String> createTestFileList() {
@@ -61,10 +61,11 @@ public class XmlXpathIndexerTest {
         return fileList;
     }
 
-    private String detectFileEncoding(String filename) throws IOException {
+    private String detectFileEncoding(String filename) throws IOException, URISyntaxException {
         String result;
         URL url = XmlXpathIndexerTest.class.getResource(filename);
-        SimpleXmlElementExtractor xee = new SimpleXmlElementExtractor();
+        File f = new File(url.toURI());
+        SimpleXmlElementExtractor xee = new SimpleXmlElementExtractor(f);
         result = xee.detectFileEncoding( url );
         return result;
     }
@@ -89,7 +90,7 @@ public class XmlXpathIndexerTest {
 
             // ----- index creation ------ //
             StandardXpathIndex index = XmlXpathIndexer.buildIndex( is );
-            is.close();
+            
             Assert.assertNotNull( "Index was not created!", index );
 
             // ----- extraction of XML snippets using index and extractor ------ //

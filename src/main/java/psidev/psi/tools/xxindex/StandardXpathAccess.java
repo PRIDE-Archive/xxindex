@@ -1,14 +1,26 @@
 package psidev.psi.tools.xxindex;
 
-import psidev.psi.tools.xxindex.index.*;
-
-import java.io.*;
-import java.nio.MappedByteBuffer;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.channels.FileChannel;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 import java.util.zip.GZIPInputStream;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import psidev.psi.tools.xxindex.index.ByteBuffer;
+import psidev.psi.tools.xxindex.index.IndexElement;
+import psidev.psi.tools.xxindex.index.XmlElement;
+import psidev.psi.tools.xxindex.index.XmlXpathIndexer;
+import psidev.psi.tools.xxindex.index.XpathIndex;
 
 /**
  * Author: Florian Reisinger
@@ -79,23 +91,33 @@ public class StandardXpathAccess implements XpathAccess {
         }
 
         this.file = file;
+    
         fis = new FileInputStream(file);
-
+        
         // choosing the Extractor to use
         if (file.getName().endsWith(".gz")) {
             isGzFile = true;
             this.index = XmlXpathIndexer.buildIndex(new GZIPInputStream(fis), aXpathInclusionSet, recordLineNumbers);
-            this.extractor = new GzXmlElementExtractor();
+            this.extractor = new GzXmlElementExtractor(file);
         } else {
             isGzFile = false;
             this.index = XmlXpathIndexer.buildIndex(fis, aXpathInclusionSet, recordLineNumbers);
-            this.extractor = new SimpleXmlElementExtractor();
+            this.extractor = new SimpleXmlElementExtractor(file);
         }
 
         String enc = extractor.detectFileEncoding(file.toURI().toURL());
         if (enc != null) {
             extractor.setEncoding(enc);
         }
+        
+ 
+        
+    }
+    
+    @Override
+    protected void finalize() throws Throwable {
+        super.finalize();
+        fis.close();
     }
 
     ////////////////////
@@ -165,7 +187,7 @@ public class StandardXpathAccess implements XpathAccess {
             // get String for ByteRange
             for (IndexElement range : ranges) {
                 if ((start == null || range.getStart() >= start) && (stop == null || range.getStop() <= stop)) {
-                    results.add(extractor.readString(range.getStart(), range.getStop(), file));
+                    results.add(extractor.readString(range.getStart(), range.getStop()));
                 }
             }
         } else {
@@ -241,11 +263,10 @@ public class StandardXpathAccess implements XpathAccess {
         long startPos = element.getStart();
 
         InputStream stream = null;
-        try {
-            fis = new FileInputStream(file);
 
             // check whether we are dealing with a gzip'ed file
             if (isGzFile) {
+                fis.getChannel().position(0);
                 stream = new GZIPInputStream(fis, 1048576); // 1MB read buffer
                 long skipped = stream.skip(startPos);
                 if (skipped != startPos) {
@@ -271,18 +292,7 @@ public class StandardXpathAccess implements XpathAccess {
             }
             startTag = bb.toString("ASCII");
 
-        } finally {
-            try {
-//                if (fis != null) {
-//                    fis.close();
-//                }
-                if (stream != null) {
-                    stream.close();
-                }
-            } catch (IOException e) {
-                // ignore
-            }
-        }
+        
 
         return startTag;
     }
@@ -336,7 +346,7 @@ public class StandardXpathAccess implements XpathAccess {
             String result;
             IndexElement range = iterator.next();
             try {
-                result = extractor.readString(range.getStart(), range.getStop(), file);
+                result = extractor.readString(range.getStart(), range.getStop());
             } catch (IOException e) {
                 throw new IllegalStateException("Caught IOException while reading from file: " + file.getName(), e);
             }
@@ -388,7 +398,7 @@ public class StandardXpathAccess implements XpathAccess {
             // get String for ByteRange and get the line number for the range
             for (IndexElement element : elements) {
                 if ((start == null || element.getStart() >= start) && (stop == null || element.getStop() <= stop)) {
-                    String tmp = extractor.readString(element.getStart(), element.getStop(), file);
+                    String tmp = extractor.readString(element.getStart(), element.getStop());
                     long posTmp = element.getLineNumber();
                     results.add(new XmlElement(tmp, posTmp));
                 }
@@ -490,7 +500,7 @@ public class StandardXpathAccess implements XpathAccess {
             XmlElement result;
             IndexElement element = iterator.next();
             try {
-                String xmlSnippet = extractor.readString(element.getStart(), element.getStop(), file);
+                String xmlSnippet = extractor.readString(element.getStart(), element.getStop());
                 long position = element.getLineNumber();
                 result = new XmlElement(xmlSnippet, position);
             } catch (IOException e) {

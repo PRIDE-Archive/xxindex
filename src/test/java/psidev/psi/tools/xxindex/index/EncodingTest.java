@@ -27,13 +27,13 @@ public class EncodingTest {
             InputStream is = url.openStream();
             StandardXpathIndex index = XmlXpathIndexer.buildIndex(is);
             IndexElement range = index.getElements("/first/second/third/fourth").get(1);
-
-            SimpleXmlElementExtractor xee = new SimpleXmlElementExtractor();
+            File file = new File(url.toURI());
+            SimpleXmlElementExtractor xee = new SimpleXmlElementExtractor(file);
             String encoding = xee.detectFileEncoding(url);
             if (encoding != null) {
                 xee.setEncoding(encoding);
             }
-            String xmlSnippet = xee.readString(range.getStart(), range.getStop(), new File(url.toURI()));
+            String xmlSnippet = xee.readString(range.getStart(), range.getStop());
             Assert.assertTrue( xmlSnippet.startsWith("<fourth>"));
             Assert.assertTrue( xmlSnippet.endsWith("</fourth>"));
         }
