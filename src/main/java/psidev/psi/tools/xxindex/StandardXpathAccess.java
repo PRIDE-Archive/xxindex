@@ -89,7 +89,7 @@ public class StandardXpathAccess implements XpathAccess {
         } else {
             isGzFile = false;
             this.index = XmlXpathIndexer.buildIndex(fis, aXpathInclusionSet, recordLineNumbers);
-            this.extractor = new SimpleXmlElementExtractor();
+            this.extractor = new FastXmlElementExtractor(file);
         }
 
         String enc = extractor.detectFileEncoding(file.toURI().toURL());

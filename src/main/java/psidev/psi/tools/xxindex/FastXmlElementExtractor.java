@@ -2,6 +2,7 @@ package psidev.psi.tools.xxindex;
 
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
@@ -23,17 +24,19 @@ import psidev.psi.tools.xxindex.index.IndexElement;
  * It does not have the ability to detect the character encoding of the file,
  * unless it is provided in the <?xml ... encoding="..." ... ?> tag.
  * By default ASCII encoding is assumed.
+ *
+ * This XmlElementExtractor uses a RandomAccessFile that is opened in the 
+ * constructor and remains open during the lifetime of the class. The file
+ * is closed in the finalize() method, when this class is collected by the 
+ * garbage collector.  
  * 
- * @deprecated Please use the FastXmlElementExtractor implementation instead, for 
- *              better performance. 
  * @author Florian Reisinger
  *         Date: 21-Oct-2010
  * @since 0.10
  */
-@Deprecated 
-public class SimpleXmlElementExtractor implements XmlElementExtractor {
+public class FastXmlElementExtractor implements XmlElementExtractor {
 
-    private  static final Logger log = LoggerFactory.getLogger(SimpleXmlElementExtractor.class);
+    private  static final Logger log = LoggerFactory.getLogger(FastXmlElementExtractor.class);
 
 // XML 1.1 specs
 // [3]  S            ::=  (#x20 | #x9 | #xD | #xA)+             /* spaces, carriage returns, line feeds, or tabs */
@@ -47,6 +50,7 @@ public class SimpleXmlElementExtractor implements XmlElementExtractor {
 
     private boolean useSystemDefaultEncoding;
     private Charset encoding;
+    private final RandomAccessFile raf;
 
 
     ////////////////////
@@ -54,20 +58,32 @@ public class SimpleXmlElementExtractor implements XmlElementExtractor {
 
     /**
      * Default constructor setting the default character encoding to 'ASCII'.
+     * @throws FileNotFoundException 
      */
-    public SimpleXmlElementExtractor() {
+    public FastXmlElementExtractor(File file) throws FileNotFoundException {
         setUseSystemDefaultEncoding(false);
         setEncoding(Charset.forName("ASCII"));
+        raf = new RandomAccessFile(file, "r");
     }
 
     /**
      * Constructor overwriting the default character encoding with the specified one.
      *
      * @param encoding The Charset to use to translate the read bytes.
+     * @throws FileNotFoundException 
      */
-    public SimpleXmlElementExtractor(Charset encoding) {
-        this();
+    public FastXmlElementExtractor(File file, Charset encoding) throws FileNotFoundException {
+        this(file);
         setEncoding(encoding);
+    }
+    
+    /**
+     * Close the underlying RandomAccessFile when this class is garbage collected 
+     */
+    @Override
+    protected void finalize() throws Throwable {
+        super.finalize();
+        if (raf != null) raf.close();
     }
 
     ////////////////////
@@ -132,14 +148,14 @@ public class SimpleXmlElementExtractor implements XmlElementExtractor {
     // Methods
 
     /**
-     * Same as readString(long from, long to, File file), but start and stop wrapped in a ByteRange object.
+     * Same as readString(long from, long to), but start and stop wrapped in a ByteRange object.
      * @param br the ByteRange to read.
      * @param file the file to read from.
      * @return the XML element including start and stop tag in a String.
      * @throws IOException if an I/O error occurs while reading.
      */
-    public String readString(IndexElement br, File file) throws IOException {
-        return readString(br.getStart(), br.getStop(), file);
+    public String readString(IndexElement br, File f) throws IOException {
+        return readString(br.getStart(), br.getStop(), f);
     }
 
     /**
@@ -148,32 +164,26 @@ public class SimpleXmlElementExtractor implements XmlElementExtractor {
      *
      * @param from The position from where to start reading.
      * @param to The position to which to read.
-     * @param file The file to read from.
+     * @param file This parameter is ignored by this implementation.
      * @return The read byte array.
      * @throws IOException If a I/O Exception during the reading process occurred.
      * @throws IllegalArgumentException If the range specified to read (to - from)
      *                                  is to big (> Integer.MAX_VALUE characters).
      */
-    public byte[] readBytes(long from, long to, File file) throws IOException {
-        RandomAccessFile raf = null;
+    public synchronized byte[] readBytes(long from, long to, File file) throws IOException {
         byte[] bytes;
-        try {
-            raf = new RandomAccessFile(file, "r");
-            // go to specified start position
-            raf.seek(from);
-            Long length = to - from;
-            if (length > Integer.MAX_VALUE) {
-                throw new IllegalArgumentException("Can not read more than " + Integer.MAX_VALUE + " bytes!");
-            }
-            bytes = new byte[length.intValue()];
-
-            // read into buffer
-            raf.read(bytes, 0, length.intValue());
-        } finally {
-            if (raf != null) {
-                raf.close();
-            }
+        
+        // go to specified start position
+        raf.seek(from);
+        Long length = to - from;
+        if (length > Integer.MAX_VALUE) {
+            throw new IllegalArgumentException("Can not read more than " + Integer.MAX_VALUE + " bytes!");
         }
+        bytes = new byte[length.intValue()];
+                
+        // read into buffer
+        raf.read(bytes, 0, length.intValue());
+        
         return bytes;
     }
 
@@ -187,9 +197,9 @@ public class SimpleXmlElementExtractor implements XmlElementExtractor {
      * @param file The file to read from.
      * @return The XML element including start and stop tag in a String.
      */
-    public String readString(long from, long to, File file) throws IOException {
+    public String readString(long from, long to, File f) throws IOException {
         // retrieve the bytes from the given range in the file
-        byte[] bytes = readBytes(from, to, file);
+        byte[] bytes = readBytes(from, to, f);
 
         // remove all zero bytes (Mac filling bytes)
         byte[] newBytes = removeZeroBytes(bytes);
@@ -246,13 +256,13 @@ public class SimpleXmlElementExtractor implements XmlElementExtractor {
         String fileStart = new String(bytes, "ASCII");
 
         // first check if there is a XML header
-        Matcher mHead = SimpleXmlElementExtractor.xmlHeader.matcher(fileStart);
+        Matcher mHead = FastXmlElementExtractor.xmlHeader.matcher(fileStart);
         if (!mHead.matches()) {
             // no XML header not found
             log.debug("No XML header found for input: " + fileLocation);
             return null;
         }
-        Matcher mEnc = SimpleXmlElementExtractor.xmlEnc.matcher(fileStart);
+        Matcher mEnc = FastXmlElementExtractor.xmlEnc.matcher(fileStart);
         if (!mEnc.matches()) {
             return null;
         }
