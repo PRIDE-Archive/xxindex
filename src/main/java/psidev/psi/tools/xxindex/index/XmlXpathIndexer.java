@@ -120,7 +120,7 @@ public class XmlXpathIndexer {
      * @see this#buildIndex(java.io.InputStream)
      */
     public static StandardXpathIndex buildIndex(InputStream is, Set<String> aXpathInclusionSet, boolean recordLineNumber, boolean ignoreNSPrefix) throws IOException {
-        BufferedInputStream bufStream = new BufferedInputStream(is);
+        BufferedInputStream bufStream = new BufferedInputStream(is, 1000000);
 
         InputStream tmpStream;
         DigestInputStream digestStream;
@@ -258,8 +258,8 @@ public class XmlXpathIndexer {
             index.setChecksum(checksumHexString);
         }
 
-        countStream.close();
-        is.close();
+        // countStream.close();
+        // is.close();
         return index;
     }
 

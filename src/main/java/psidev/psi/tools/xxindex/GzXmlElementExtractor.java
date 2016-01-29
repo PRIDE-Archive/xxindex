@@ -39,28 +39,54 @@ public class GzXmlElementExtractor implements XmlElementExtractor {
 
     private boolean useSystemDefaultEncoding;
     private Charset encoding;
-
+    private FileInputStream fis;
 
     ////////////////////
     // Constructor
 
     /**
      * Default constructor setting the default character encoding to 'ASCII'.
+     * @throws IOException 
      */
-    public GzXmlElementExtractor() {
+    public GzXmlElementExtractor(File file) throws IOException {
+        
+        if (file == null) {
+            throw new IllegalArgumentException("Source file must not be null!");
+        }
+        if (!file.exists() || !file.canRead()) {
+            throw new IllegalArgumentException("Invalid source file! Can not read from: " + file.getAbsolutePath());
+        }
+        if (!file.getName().endsWith(".gz")) {
+            throw new IllegalArgumentException("Source file does not seem to be a .gz file! Consider using another XmlElementExtractor.");
+        }
+        
         setUseSystemDefaultEncoding(false);
         setEncoding(Charset.forName("ASCII"));
+        
+        // create a input stream on a gz compressed file with 1MB buffer size
+        fis = new FileInputStream(file);
+
+        
     }
 
     /**
      * Constructor overwriting the default character encoding with the specified one.
      *
      * @param encoding The Charset to use to translate the read bytes.
+     * @throws IOException 
      */
-    @SuppressWarnings(value = "unused")
-    public GzXmlElementExtractor(Charset encoding) {
-        this();
+    public GzXmlElementExtractor(File file, Charset encoding) throws IOException {
+        this(file);
         setEncoding(encoding);
+    }
+    
+    /**
+     * Close the underlying InputStream when this class is garbage collected 
+     */
+    @Override
+    protected void finalize() throws Throwable {
+        super.finalize();
+        fis.close();
     }
 
     ////////////////////
@@ -137,43 +163,28 @@ public class GzXmlElementExtractor implements XmlElementExtractor {
      * @throws IllegalArgumentException If the range specified to read (to - from)
      *                                  is to big (> Integer.MAX_VALUE characters).
      */
-    public byte[] readBytes(long from, long to, File file) throws IOException {
+    public byte[] readBytes(long from, long to) throws IOException {
 
-        if (file == null) {
-            throw new IllegalArgumentException("Source file must not be null!");
-        }
-        if (!file.exists() || !file.canRead()) {
-            throw new IllegalArgumentException("Invalid source file! Can not read from: " + file.getAbsolutePath());
-        }
-        if (!file.getName().endsWith(".gz")) {
-            throw new IllegalArgumentException("Source file does not seem to be a .gz file! Consider using another XmlElementExtractor.");
-        }
-
-        // create a input stream on a gz compressed file with 1MB buffer size
-        GZIPInputStream gzis = null;
         byte[] bytes;
-        try {
-            gzis = new GZIPInputStream(new FileInputStream(file), 1048576);
-            BufferedInputStream bis = new BufferedInputStream(gzis);
 
-            long actuallySlipped = bis.skip(from);
-            if (actuallySlipped != from) {
-                throw new IllegalStateException("Could not position at requested location, reading compromised! Location: " + from);
-            }
+        fis.getChannel().position(0);
+        GZIPInputStream gzis = new GZIPInputStream(fis, 1048576);
+        BufferedInputStream bis = new BufferedInputStream(gzis);
 
-            Long length = to - from;
-            if (length > Integer.MAX_VALUE) {
-                throw new IllegalArgumentException("Can not read more than " + Integer.MAX_VALUE + " characters!");
-            }
-            bytes = new byte[length.intValue()];
-
-            // read into buffer
-            bis.read(bytes, 0, length.intValue());
-        } finally {
-            if (gzis != null) {
-                gzis.close();
-            }
+        long actuallySlipped = bis.skip(from);
+        if (actuallySlipped != from) {
+            throw new IllegalStateException("Could not position at requested location, reading compromised! Location: " + from);
         }
+
+        Long length = to - from;
+        if (length > Integer.MAX_VALUE) {
+            throw new IllegalArgumentException("Can not read more than " + Integer.MAX_VALUE + " characters!");
+        }
+        bytes = new byte[length.intValue()];
+
+        // read into buffer
+        bis.read(bytes, 0, length.intValue());
+        
 
         return bytes;
     }
@@ -189,9 +200,9 @@ public class GzXmlElementExtractor implements XmlElementExtractor {
      * @param file The file to read from (needs to be *.gz).
      * @return The XML element including start and stop tag in a String.
      */
-    public String readString(long from, long to, File file) throws IOException {
+    public String readString(long from, long to) throws IOException {
         // retrieve the bytes from the given range in the file
-        byte[] bytes = readBytes(from, to, file);
+        byte[] bytes = readBytes(from, to);
 
         // remove all zero bytes (Mac filling bytes)
         byte[] newBytes = removeZeroBytes(bytes);
