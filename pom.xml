@@ -5,7 +5,7 @@
     <groupId>psidev.psi.tools</groupId>
     <artifactId>xxindex</artifactId>
     <packaging>jar</packaging>
-    <version>0.17-SNAPSHOT</version>
+    <version>0.17</version>
     <url>https://github.com/PRIDE-Utilities/xxindex</url>
 
     <developers>
@@ -153,7 +153,7 @@
         <connection>scm:git:github.com/PRIDE-Utilities/xxindex.git</connection>
         <developerConnection>scm:git:git@github.com:PRIDE-Utilities/xxindex.git</developerConnection>
         <url>https://github.com/PRIDE-Utilities/xxindex.git</url>
-        <tag>HEAD</tag>
+        <tag>xxindex-0.17</tag>
     </scm>
 
 </project>
