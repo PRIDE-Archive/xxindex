@@ -160,7 +160,7 @@
     <!--scm git config-->
     <scm>
         <connection>scm:git:https://github.com/PRIDE-Utilities/xxindex.git</connection>
-        <developerConnection>sscm:git:https://github.com/PRIDE-Utilities/xxindex.git</developerConnection>
+        <developerConnection>scm:git:https://github.com/PRIDE-Utilities/xxindex.git</developerConnection>
         <url>https://github.com/PRIDE-Utilities/xxindex.git</url>
         <tag>HEAD</tag>
     </scm>
