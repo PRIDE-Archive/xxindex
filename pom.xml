@@ -28,6 +28,7 @@
            <plugin>
                <groupId>org.apache.maven.plugins</groupId>
                <artifactId>maven-compiler-plugin</artifactId>
+               <version>3.1</version>
                <configuration>
                    <source>1.7</source>
                    <target>1.7</target>
@@ -36,6 +37,7 @@
            </plugin>
            <plugin>
                <artifactId>maven-source-plugin</artifactId>
+               <version>2.2.1</version>
                <executions>
                    <execution>
                        <id>attach-source</id>
@@ -102,7 +104,7 @@
 
         <!-- for file encoding detection -->
         <dependency>
-            <groupId>cpdetector</groupId>
+            <groupId>net.sourceforge.cpdetector</groupId>
             <artifactId>cpdetector</artifactId>
             <version>1.0.7</version>
         </dependency>
@@ -125,9 +127,16 @@
 
     <repositories>
         <repository>
-            <id>intact.nexus</id>
-            <name>IntAct Nexus</name>
-            <url>http://www.ebi.ac.uk/intact/maven/nexus/content/groups/public/</url>
+            <id>nexus-ebi-release-repo</id>
+            <url>http://www.ebi.ac.uk/Tools/maven/repos/content/groups/ebi-repo/</url>
+        </repository>
+        <repository>
+            <id>nexus-ebi-snapshot-repo</id>
+            <url>http://www.ebi.ac.uk/Tools/maven/repos/content/groups/ebi-snapshots/</url>
+        </repository>
+        <repository>
+            <id>sammoa-group</id>
+            <url>http://maven.nuiton.org/nexus/content/repositories/sammoa-group/</url>
         </repository>
     </repositories>
 
@@ -150,8 +159,8 @@
 
     <!--scm git config-->
     <scm>
-        <connection>scm:git:github.com/PRIDE-Utilities/xxindex.git</connection>
-        <developerConnection>scm:git:git@github.com:PRIDE-Utilities/xxindex.git</developerConnection>
+        <connection>scm:git:https://github.com/PRIDE-Utilities/xxindex.git</connection>
+        <developerConnection>sscm:git:https://github.com/PRIDE-Utilities/xxindex.git</developerConnection>
         <url>https://github.com/PRIDE-Utilities/xxindex.git</url>
         <tag>HEAD</tag>
     </scm>
