@@ -36,7 +36,8 @@
     <name>PSI::Tools::XmlXPath::Indexer</name>
 
     <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <uk.ac.ebi.pride.architectural.pride-logging.version>1.0.0</uk.ac.ebi.pride.architectural.pride-logging.version>
+        <uk.ac.ebi.pride.architectural.pride-tdd.version>1.0.3</uk.ac.ebi.pride.architectural.pride-tdd.version>
     </properties>
 
     <build>
@@ -92,7 +93,7 @@
         <dependency>
             <groupId>uk.ac.ebi.pride.architectural</groupId>
             <artifactId>pride-tdd</artifactId>
-            <version>1.0.3</version>
+            <version>${uk.ac.ebi.pride.architectural.pride-tdd.version}</version>
             <type>pom</type>
             <scope>test</scope>
         </dependency>
@@ -101,7 +102,7 @@
         <dependency>
             <groupId>uk.ac.ebi.pride.architectural</groupId>
             <artifactId>pride-logging</artifactId>
-            <version>1.0.0</version>
+            <version>${uk.ac.ebi.pride.architectural.pride-logging.version}</version>
             <type>pom</type>
         </dependency>
     </dependencies>
