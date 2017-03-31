@@ -113,10 +113,6 @@
             <id>sammoa-group</id>
             <url>http://maven.nuiton.org/nexus/content/repositories/sammoa-group/</url>
         </repository>
-        <repository>
-            <id>nexus-ebi-release-repo</id>
-            <url>http://www.ebi.ac.uk/Tools/maven/repos/content/groups/ebi-repo/</url>
-        </repository>
     </repositories>
 
     <!--scm git config-->
