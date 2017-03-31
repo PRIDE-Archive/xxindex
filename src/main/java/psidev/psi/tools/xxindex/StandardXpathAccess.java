@@ -3,9 +3,7 @@ package psidev.psi.tools.xxindex;
 import psidev.psi.tools.xxindex.index.*;
 
 import java.io.*;
-import java.nio.MappedByteBuffer;
 import java.nio.channels.AsynchronousFileChannel;
-import java.nio.channels.FileChannel;
 import java.nio.file.StandardOpenOption;
 import java.util.*;
 import java.util.concurrent.Future;
@@ -15,9 +13,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Author: Florian Reisinger Date: 14-Jan-2008
+ * Author: Florian Reisinger
+ * Date: 14-Jan-2008
  */
-public class StandardXpathAccess implements XpathAccess {//
+public class StandardXpathAccess implements XpathAccess {
 
     Logger logger = LoggerFactory.getLogger(StandardXpathAccess.class);
 
@@ -33,10 +32,9 @@ public class StandardXpathAccess implements XpathAccess {//
     // Constructors
 
     /**
-     * This constructor creates an xpath index (LineXpathIndex) from the
-     * specified XML file, and will include all encountered xpaths in this
-     * index. Note: this XpathAccess can handle gz compressed files, but the
-     * performance will be impaired!
+     * This constructor creates an xpath index (LineXpathIndex) from the specified XML file,
+     * and will include all encountered xpaths in this index.
+     * Note: this XpathAccess can handle gz compressed files, but the performance will be impaired!
      *
      * @param file File with the XML file to index
      * @throws IOException when the file could not be accessed
@@ -46,17 +44,16 @@ public class StandardXpathAccess implements XpathAccess {//
     }
 
     /**
-     * This constructor creates an xpath index (XpathIndex) from the specified
-     * XML file, and takes a set of xpaths to include in this index. All xpaths
-     * that do not correspond to one of the xpaths included in this set will be
-     * ignored and therefore omitted from the index!
+     * This constructor creates an xpath index (XpathIndex) from the specified XML file,
+     * and takes a set of xpaths to include in this index.
+     * All xpaths that do not correspond to one of the xpaths included
+     * in this set will be ignored and therefore omitted from the index!
      *
      * @param file               File with the XML file to index.
-     * @param aXpathInclusionSet Set with the String representation of the xpaths to include in
-     *                           the index. <b>Note</b> that these xpaths should have their
-     *                           trailing '/' removed! <b>Also note</b> that any xpath not
-     *                           included in this list will <b>not</b> be added to the index!
-     *                           Can be 'null' to ensure inclusion of all xpaths.
+     * @param aXpathInclusionSet Set with the String representation of the xpaths to include in the index.
+     *                           <b>Note</b> that these xpaths should have their trailing '/' removed!
+     *                           <b>Also note</b> that any xpath not included in this list will <b>not</b> be added
+     *                           to the index! Can be 'null' to ensure inclusion of all xpaths.
      * @throws IOException when the file could not be accessed
      */
     public StandardXpathAccess(File file, Set<String> aXpathInclusionSet) throws IOException {
@@ -64,21 +61,17 @@ public class StandardXpathAccess implements XpathAccess {//
     }
 
     /**
-     * This constructor creates an xpath index for the specified XML file,
-     * considering the given xpath inclusion list. It will record the line
-     * numbers of the XML starting tags according to the specified value of the
-     * recordLineNumbers parameter.
+     * This constructor creates an xpath index for the specified XML file, considering the given
+     * xpath inclusion list. It will record the line numbers of the XML starting tags according to the
+     * specified value of the recordLineNumbers parameter.
      *
      * @param file               File with the XML file to index.
-     * @param aXpathInclusionSet Set with the String representation of the xpaths to include in
-     *                           the index.
-     * @param recordLineNumbers  flag whether to record the line numbers of the XML starting
-     *                           tags.
+     * @param aXpathInclusionSet Set with the String representation of the xpaths to include in the index.
+     * @param recordLineNumbers  flag whether to record the line numbers of the XML starting tags.
      * @throws IOException when the file could not be accessed
      * @see this#StandardXpathAccess(java.io.File, java.util.Set)
      */
-    public StandardXpathAccess(File file, Set<String> aXpathInclusionSet, boolean recordLineNumbers)
-            throws IOException {
+    public StandardXpathAccess(File file, Set<String> aXpathInclusionSet, boolean recordLineNumbers) throws IOException {
 
         if (file == null) {
             throw new IllegalArgumentException("The input file must not be null!");
@@ -111,9 +104,8 @@ public class StandardXpathAccess implements XpathAccess {//
     // Getter & Setter
 
     /**
-     * This method gives access to the XpathIndex that is used internally in
-     * this XpathAccess implementation. Note: the used index is a
-     * StandardXpathIndex and the returned Object can therefore be cased to
+     * This method gives access to the XpathIndex that is used internally in this XpathAccess implementation.
+     * Note: the used index is a StandardXpathIndex and the returned Object can therefore be cased to
      * StandardXpathIndex to get access to more specific functionality.
      *
      * @return the created index.
@@ -135,12 +127,11 @@ public class StandardXpathAccess implements XpathAccess {//
     // Method
 
     /**
-     * This method will retrieve XML snippets for the specified xpath. The xpath
-     * defines the path from the root element to the XML element to extract.
+     * This method will retrieve XML snippets for the specified xpath. The xpath defines the path from
+     * the root element to the XML element to extract.
      *
      * @param xpath a xpath expression valid for the XML file.
-     * @return a List of Strings representing the XML elements specified with
-     * the xpath.
+     * @return a List of Strings representing the XML elements specified with the xpath.
      * @throws IOException when IO Error while reading from the XML file.
      */
     public List<String> getXmlSnippets(String xpath) throws IOException {
@@ -148,11 +139,10 @@ public class StandardXpathAccess implements XpathAccess {//
     }
 
     /**
-     * This method will retrieve XML snippets for the specified xpath. The xpath
-     * defines the path from the root element to the XML element to extract.
-     * Only elements that are located <b>between</b> the specified start and
-     * stop byte positions will be returned.
-     * <p>
+     * This method will retrieve XML snippets for the specified xpath. The xpath defines the path from
+     * the root element to the XML element to extract.
+     * Only elements that are located <b>between</b> the specified start and stop byte positions
+     * will be returned.
      * <pre>
      * Requirement for a XML element to be returned:
      *     element.getStart() >= start && element.getStop() <= stop
@@ -161,12 +151,9 @@ public class StandardXpathAccess implements XpathAccess {//
      * </pre>
      *
      * @param xpath a xpath expression valid for the XML file.
-     * @param start the start byte position, before which no elements will be
-     *              returned.
-     * @param stop  the stop byte position, after which no elements will be
-     *              returned.
-     * @return a List of Strings representing the XML elements specified with
-     * the xpath and within the specified range.
+     * @param start the start byte position, before which no elements will be returned.
+     * @param stop  the stop byte position, after which no elements will be returned.
+     * @return a List of Strings representing the XML elements specified with the xpath and within the specified range.
      * @throws IOException when IO Error while reading from the XML file.
      * @see this#getXmlSnippets(String)
      */
@@ -191,32 +178,26 @@ public class StandardXpathAccess implements XpathAccess {//
     }
 
     /**
-     * This method can be used whenever the expected list of XML snippets is
-     * very long. The snippets are not read all at once, but rather every call
-     * of next() will read another XML snippet.
+     * This method can be used whenever the expected list of XML snippets is very long. The snippets
+     * are not read all at once, but rather every call of next() will read another XML snippet.
      *
      * @param xpath a xpath expression valid for the XML file.
-     * @return a Iterator over the Strings representing the XML elements
-     * specified with the xpath.
+     * @return a Iterator over the Strings representing the XML elements specified with the xpath.
      */
     public Iterator<String> getXmlSnippetIterator(String xpath) {
         return getXmlSnippetIterator(xpath, null, null);
     }
 
     /**
-     * This method can be used whenever the expected list of XML snippets is
-     * very long. The snippets are not read all at once, but rather every call
-     * of next() will read another XML snippet. Only elements that are located
-     * <b>between</b> the specified start and stop byte positions will be
-     * returned.
+     * This method can be used whenever the expected list of XML snippets is very long. The snippets
+     * are not read all at once, but rather every call of next() will read another XML snippet.
+     * Only elements that are located <b>between</b> the specified start and stop byte positions
+     * will be returned.
      *
      * @param xpath a xpath expression valid for the XML file.
-     * @param start the start byte position, before which no elements will be
-     *              returned.
-     * @param stop  the stop byte position, after which no elements will be
-     *              returned.
-     * @return a Iterator over the Strings representing the XML elements
-     * specified with the xpath.
+     * @param start the start byte position, before which no elements will be returned.
+     * @param stop  the stop byte position, after which no elements will be returned.
+     * @return a Iterator over the Strings representing the XML elements specified with the xpath.
      * @see this#getXmlSnippets(String, Long, Long)
      */
     public Iterator<String> getXmlSnippetIterator(String xpath, Long start, Long stop) {
@@ -237,18 +218,17 @@ public class StandardXpathAccess implements XpathAccess {//
 
     /**
      * @param xpath the xpath expression of the XML element of interest.
-     * @return the number of elements that correspond to the specified xpath or
-     * -1 if the xpath is not recognized.
+     * @return the number of elements that correspond to the specified xpath or -1 if the xpath is not recognized.
      */
     public int getXmlElementCount(String xpath) {
         return index.getElementCount(xpath);
     }
 
     /**
-     * A method to extract the start tag only of a XML element. Note: that the
-     * start tag includes all the XML element attributes. This method provides
-     * therefore access to the XML element attributes without the need of
-     * reading the whole element (start tag to stop tag).
+     * A method to extract the start tag only of a XML element.
+     * Note: that the start tag includes all the XML element attributes.
+     * This method provides therefore access to the XML element attributes
+     * without the need of reading the whole element (start tag to stop tag).
      *
      * @param element the IndexElement defining the XML element.
      * @return a String of the full start tag.
@@ -263,52 +243,39 @@ public class StandardXpathAccess implements XpathAccess {//
         long startPos = element.getStart();
 
         InputStream stream = null;
-        try {
-            if (asynchFileChannel == null || !asynchFileChannel.isOpen()) {
-                asynchFileChannel = AsynchronousFileChannel.open(file.toPath(), StandardOpenOption.READ);
+        if (asynchFileChannel == null || !asynchFileChannel.isOpen()) {
+            asynchFileChannel = AsynchronousFileChannel.open(file.toPath(), StandardOpenOption.READ);
+        }
+        // check whether we are dealing with a gzip'ed file
+        if (isGzFile) {
+            stream = new GZIPInputStream(fis, 1048576); // 1MB read buffer
+            long skipped = stream.skip(startPos);
+            if (skipped != startPos) {
+                throw new IllegalStateException("Could not position at requested location, reading compromised! Location: " + startPos);
             }
-            // check whether we are dealing with a gzip'ed file
-            if (isGzFile) {
-                stream = new GZIPInputStream(fis, 1048576); // 1MB read buffer
-                long skipped = stream.skip(startPos);
-                if (skipped != startPos) {
-                    throw new IllegalStateException(
-                            "Could not position at requested location, reading compromised! Location: " + startPos);
-                }
-            } else {
-                // FileChannel fc = fis.getChannel();
-                // fc = fc.position(startPos);
-                // stream = new BufferedInputStream(fis, 1048576); // 1MB read
-                // buffer
-            }
+        }
 
-            boolean stopFound = false;
-            java.nio.ByteBuffer bb = java.nio.ByteBuffer.allocate(1028);
-            Future<Integer> results = asynchFileChannel.read(bb, startPos);
-            while (!results.isDone()) {
-//				System.out.println("Do something else while reading is in progress... ");
-            }
-            bb.flip();
-            ByteBuffer bbf = new ByteBuffer();
-            while (bb.hasRemaining()) {
-                byte b = bb.get();
-                bbf.append(b);
-                if ((char) b == '>') {
-                    startTag = bbf.toString("ASCII");
-                    return startTag;
-                }
-            }
+        java.nio.ByteBuffer byteBuffer = java.nio.ByteBuffer.allocate(1024);
+        Future<Integer> results = asynchFileChannel.read(byteBuffer, startPos);
+        while (!results.isDone()) {
+            // TODO - Would it be possible to find another way of waiting for results different from busy wait?
+        }
 
-        } finally {
-
+        byteBuffer.flip();
+        psidev.psi.tools.xxindex.index.ByteBuffer psiByteBuffer = new psidev.psi.tools.xxindex.index.ByteBuffer();
+        while (byteBuffer.hasRemaining()) {
+            byte aByte = byteBuffer.get();
+            psiByteBuffer.append(aByte);
+            if ((char) aByte == '>') {
+                startTag = psiByteBuffer.toString("ASCII");
+            }
         }
 
         return startTag;
     }
 
     /**
-     * + Private Iterator implementation that allows the iteration over XML
-     * snippets as Strings.
+     * + Private Iterator implementation that allows the iteration over XML snippets as Strings.
      */
     private class XmlSnippetIterator implements Iterator<String> {
 
@@ -322,19 +289,15 @@ public class StandardXpathAccess implements XpathAccess {//
             this.file = file;
         }
 
-        public XmlSnippetIterator(List<IndexElement> elements, XmlElementExtractor extractor, File file, Long start,
-                                  Long stop) {
-            List<IndexElement> validElements; // the list of elements we will
-            // iterate over
+        public XmlSnippetIterator(List<IndexElement> elements, XmlElementExtractor extractor, File file, Long start, Long stop) {
+            List<IndexElement> validElements; // the list of elements we will iterate over
 
             // if both borders are unspecified, use all elements (initial list)
             if (start == null && stop == null) {
                 validElements = elements;
-            } else { // if at least one border is specified, we need a new list
-                // containing only valid elements
+            } else { // if at least one border is specified, we need a new list containing only valid elements
                 validElements = new ArrayList<IndexElement>();
-                // iterate over the initial list and add only the valid elements
-                // to the new list
+                // iterate over the initial list and add only the valid elements to the new list
                 for (IndexElement element : elements) {
                     if ((start == null || element.getStart() >= start) && (stop == null || element.getStop() <= stop)) {
                         validElements.add(element);
@@ -352,8 +315,7 @@ public class StandardXpathAccess implements XpathAccess {//
         }
 
         /**
-         * This will throw a runtime exception if an IOException occurs during
-         * reading from the file.
+         * This will throw a runtime exception if an IOException occurs during reading from the file.
          *
          * @return the String represetation of the XML snippet.
          */
@@ -374,13 +336,13 @@ public class StandardXpathAccess implements XpathAccess {//
     }
 
     /**
-     * This mehtod will retrieve XML snippets for the specified xpath bundeled
-     * with the line number in which the xml snippet started. The xpath defines
-     * the path from the root element to the XML element to extract.
+     * This mehtod will retrieve XML snippets for the specified xpath bundeled with the
+     * line number in which the xml snippet started. The xpath defines the path from
+     * the root element to the XML element to extract.
      *
      * @param xpath a xpath expression valid for the XML file.
-     * @return a List of LineXmlElement representing the XML elements specified
-     * with the xpath and their starting line number.
+     * @return a List of LineXmlElement representing the XML elements specified with
+     *         the xpath and their starting line number.
      * @throws IOException when IO Error while reading from the XML file.
      */
     public List<XmlElement> getXmlElements(String xpath) throws IOException {
@@ -388,19 +350,17 @@ public class StandardXpathAccess implements XpathAccess {//
     }
 
     /**
-     * This mehtod will retrieve XML snippets for the specified xpath bundeled
-     * with the line number in which the XML snippet started. The xpath defines
-     * the path from the root element to the XML element to extract. Only
-     * elements that are located <b>between</b> the specified start and stop
-     * byte positions will be returned.
+     * This mehtod will retrieve XML snippets for the specified xpath bundeled with the
+     * line number in which the XML snippet started. The xpath defines the path from
+     * the root element to the XML element to extract.
+     * Only elements that are located <b>between</b> the specified start and stop byte positions
+     * will be returned.
      *
      * @param xpath a xpath expression valid for the XML file.
-     * @param start the start byte position, before which no elements will be
-     *              returned.
-     * @param stop  the stop byte position, after which no elements will be
-     *              returned.
-     * @return a List of LineXmlElement representing the XML elements specified
-     * with the xpath and their starting line number.
+     * @param start the start byte position, before which no elements will be returned.
+     * @param stop  the stop byte position, after which no elements will be returned.
+     * @return a List of LineXmlElement representing the XML elements specified with
+     *         the xpath and their starting line number.
      * @throws IOException when IO Error while reading from the XML file.
      * @see this#getXmlSnippets(String, Long, Long)
      */
@@ -408,8 +368,7 @@ public class StandardXpathAccess implements XpathAccess {//
         List<XmlElement> results = new ArrayList<XmlElement>();
         // check xpath
         // check if xpath in index
-        // if yes, transform (range + line number) into (xml snippet + line
-        // number)
+        // if yes, transform (range + line number) into (xml snippet + line number)
         if (index.containsXpath(xpath)) {
             // retrieve the xml element (range + line number) from index
             List<IndexElement> elements = index.getElements(xpath);
@@ -429,32 +388,28 @@ public class StandardXpathAccess implements XpathAccess {//
     }
 
     /**
-     * This method can be used whenever the expected list of XmlElements is very
-     * long. The elements are not produced all at once, but rather every call of
-     * next() will create another XmlElement.
+     * This method can be used whenever the expected list of XmlElements is very long. The elements
+     * are not produced all at once, but rather every call of next() will create another XmlElement.
      *
      * @param xpath a xpath expression valid for the XML file.
-     * @return a Iterator over the LineXmlElement representing the XML elements
-     * specified with the xpath and their starting line number.
+     * @return a Iterator over the LineXmlElement representing the XML elements specified with
+     *         the xpath and their starting line number.
      */
     public Iterator<XmlElement> getXmlElementIterator(String xpath) {
         return getXmlElementIterator(xpath, null, null);
     }
 
     /**
-     * This method can be used whenever the expected list of XmlElements is very
-     * long. The elements are not produced all at once, but rather every call of
-     * next() will create another XmlElement. Only elements that are located
-     * <b>between</b> the specified start and stop byte positions will be
-     * returned.
+     * This method can be used whenever the expected list of XmlElements is very long. The elements
+     * are not produced all at once, but rather every call of next() will create another XmlElement.
+     * Only elements that are located <b>between</b> the specified start and stop byte positions
+     * will be returned.
      *
      * @param xpath a xpath expression valid for the XML file.
-     * @param start the start byte position, before which no elements will be
-     *              returned.
-     * @param stop  the stop byte position, after which no elements will be
-     *              returned.
-     * @return a Iterator over the LineXmlElement representing the XML elements
-     * specified with the xpath and their starting line number.
+     * @param start the start byte position, before which no elements will be returned.
+     * @param stop  the stop byte position, after which no elements will be returned.
+     * @return a Iterator over the LineXmlElement representing the XML elements specified with
+     *         the xpath and their starting line number.
      */
     public Iterator<XmlElement> getXmlElementIterator(String xpath, Long start, Long stop) {
         Iterator<XmlElement> iter;
@@ -474,8 +429,7 @@ public class StandardXpathAccess implements XpathAccess {//
     }
 
     /**
-     * Private Iterator implementation that allows the iteration over
-     * IndexElement Objects.
+     * Private Iterator implementation that allows the iteration over IndexElement Objects.
      */
     private class XmlElementIterator implements Iterator<XmlElement> {
 
@@ -489,19 +443,14 @@ public class StandardXpathAccess implements XpathAccess {//
             this.file = file;
         }
 
-        public XmlElementIterator(List<IndexElement> elements, XmlElementExtractor extractor, File file, Long start,
-                                  Long stop) {
-            List<IndexElement> validElements; // the list of elements we will
-            // iterate over
-            // if both borders are unspecified, iterate over all elements
-            // (initial list)
+        public XmlElementIterator(List<IndexElement> elements, XmlElementExtractor extractor, File file, Long start, Long stop) {
+            List<IndexElement> validElements; // the list of elements we will iterate over
+            // if both borders are unspecified, iterate over all elements (initial list)
             if (start == null && stop == null) {
                 validElements = elements;
-            } else { // if at least one borders is specified, we need a new list
-                // containing only valid elements
+            } else { // if at least one borders is specified, we need a new list containing only valid elements
                 validElements = new ArrayList<IndexElement>();
-                // iterate over the initial list and only add the valid elements
-                // to the new list
+                // iterate over the initial list and only add the valid elements to the new list
                 for (IndexElement element : elements) {
                     if ((start == null || element.getStart() >= start) && (stop == null || element.getStop() <= stop)) {
                         validElements.add(element);
@@ -520,11 +469,9 @@ public class StandardXpathAccess implements XpathAccess {//
         }
 
         /**
-         * This will throw a runtime exception if an IOException occurs during
-         * reading from the file.
+         * This will throw a runtime exception if an IOException occurs during reading from the file.
          *
-         * @return the LineXmlElement represetating of the XML snippet and line
-         * number it started..
+         * @return the LineXmlElement represetating of the XML snippet and line number it started..
          */
         public XmlElement next() {
             XmlElement result;
