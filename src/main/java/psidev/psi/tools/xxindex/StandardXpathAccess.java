@@ -1,16 +1,31 @@
+
 package psidev.psi.tools.xxindex;
 
-import psidev.psi.tools.xxindex.index.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
-import java.io.*;
+
 import java.nio.channels.AsynchronousFileChannel;
 import java.nio.file.StandardOpenOption;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+
 import java.util.concurrent.Future;
 import java.util.zip.GZIPInputStream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import psidev.psi.tools.xxindex.index.ByteBuffer;
+import psidev.psi.tools.xxindex.index.IndexElement;
+import psidev.psi.tools.xxindex.index.XmlElement;
+import psidev.psi.tools.xxindex.index.XmlXpathIndexer;
+import psidev.psi.tools.xxindex.index.XpathIndex;
 
 /**
  * Author: Florian Reisinger
@@ -248,26 +263,40 @@ public class StandardXpathAccess implements XpathAccess {
         }
         // check whether we are dealing with a gzip'ed file
         if (isGzFile) {
-            stream = new GZIPInputStream(fis, 1048576); // 1MB read buffer
+            stream = new GZIPInputStream(new FileInputStream(file), 1048576); // 1MB read buffer
             long skipped = stream.skip(startPos);
             if (skipped != startPos) {
                 throw new IllegalStateException("Could not position at requested location, reading compromised! Location: " + startPos);
             }
-        }
+            boolean stopFound = false;
+            ByteBuffer bb = new ByteBuffer();
+            byte[] buffer = new byte[1];
+            byte read;
+            while (!stopFound) {
+                stream.read(buffer);		
+                read = buffer[0];		
+                bb.append(read);		
+                if (read == '>') {		
+                    stopFound = true;		
+                }		
+            }		
+             startTag = bb.toString("ASCII");
+        } else {
+            java.nio.ByteBuffer byteBuffer = java.nio.ByteBuffer.allocate(1024);
+            Future<Integer> results = asynchFileChannel.read(byteBuffer, startPos);
+            while (!results.isDone()) {
+                // TODO - Would it be possible to find another way of waiting for results different from busy wait?
+            }
 
-        java.nio.ByteBuffer byteBuffer = java.nio.ByteBuffer.allocate(1024);
-        Future<Integer> results = asynchFileChannel.read(byteBuffer, startPos);
-        while (!results.isDone()) {
-            // TODO - Would it be possible to find another way of waiting for results different from busy wait?
-        }
-
-        byteBuffer.flip();
-        psidev.psi.tools.xxindex.index.ByteBuffer psiByteBuffer = new psidev.psi.tools.xxindex.index.ByteBuffer();
-        while (byteBuffer.hasRemaining()) {
-            byte aByte = byteBuffer.get();
-            psiByteBuffer.append(aByte);
-            if ((char) aByte == '>') {
-                startTag = psiByteBuffer.toString("ASCII");
+            byteBuffer.flip();
+            psidev.psi.tools.xxindex.index.ByteBuffer psiByteBuffer = new psidev.psi.tools.xxindex.index.ByteBuffer();
+            while (byteBuffer.hasRemaining()) {
+                byte aByte = byteBuffer.get();
+                psiByteBuffer.append(aByte);
+                if ((char) aByte == '>') {
+                    startTag = psiByteBuffer.toString("ASCII");
+                    break;
+                }
             }
         }
 
