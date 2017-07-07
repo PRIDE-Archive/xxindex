@@ -1,14 +1,31 @@
+
 package psidev.psi.tools.xxindex;
 
-import psidev.psi.tools.xxindex.index.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
-import java.io.*;
-import java.nio.MappedByteBuffer;
-import java.nio.channels.FileChannel;
-import java.util.*;
+
+import java.nio.channels.AsynchronousFileChannel;
+import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+
+import java.util.concurrent.Future;
 import java.util.zip.GZIPInputStream;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import psidev.psi.tools.xxindex.index.ByteBuffer;
+import psidev.psi.tools.xxindex.index.IndexElement;
+import psidev.psi.tools.xxindex.index.XmlElement;
+import psidev.psi.tools.xxindex.index.XmlXpathIndexer;
+import psidev.psi.tools.xxindex.index.XpathIndex;
 
 /**
  * Author: Florian Reisinger
@@ -18,13 +35,13 @@ public class StandardXpathAccess implements XpathAccess {
 
     Logger logger = LoggerFactory.getLogger(StandardXpathAccess.class);
 
-
     private File file;
     private XpathIndex index;
     private XmlElementExtractor extractor;
     private boolean ignoreNSPrefix = true;
     private boolean isGzFile;
     private FileInputStream fis = null;
+    private AsynchronousFileChannel asynchFileChannel;
 
     ////////////////////
     // Constructors
@@ -241,46 +258,45 @@ public class StandardXpathAccess implements XpathAccess {
         long startPos = element.getStart();
 
         InputStream stream = null;
-        try {
-            fis = new FileInputStream(file);
-
-            // check whether we are dealing with a gzip'ed file
-            if (isGzFile) {
-                stream = new GZIPInputStream(fis, 1048576); // 1MB read buffer
-                long skipped = stream.skip(startPos);
-                if (skipped != startPos) {
-                    throw new IllegalStateException("Could not position at requested location, reading compromised! Location: " + startPos);
-                }
-            } else {
-                FileChannel fc = fis.getChannel();
-                fc.position(startPos);
-                stream = new BufferedInputStream(fis, 1048576); // 1MB read buffer
+        if (asynchFileChannel == null || !asynchFileChannel.isOpen()) {
+            asynchFileChannel = AsynchronousFileChannel.open(file.toPath(), StandardOpenOption.READ);
+        }
+        // check whether we are dealing with a gzip'ed file
+        if (isGzFile) {
+            stream = new GZIPInputStream(new FileInputStream(file), 1048576); // 1MB read buffer
+            long skipped = stream.skip(startPos);
+            if (skipped != startPos) {
+                throw new IllegalStateException("Could not position at requested location, reading compromised! Location: " + startPos);
             }
-
             boolean stopFound = false;
             ByteBuffer bb = new ByteBuffer();
             byte[] buffer = new byte[1];
             byte read;
             while (!stopFound) {
-                stream.read(buffer);
-                read = buffer[0];
-                bb.append(read);
-                if (read == '>') {
-                    stopFound = true;
-                }
+                stream.read(buffer);		
+                read = buffer[0];		
+                bb.append(read);		
+                if (read == '>') {		
+                    stopFound = true;		
+                }		
+            }		
+             startTag = bb.toString("ASCII");
+        } else {
+            java.nio.ByteBuffer byteBuffer = java.nio.ByteBuffer.allocate(1024);
+            Future<Integer> results = asynchFileChannel.read(byteBuffer, startPos);
+            while (!results.isDone()) {
+                // TODO - Would it be possible to find another way of waiting for results different from busy wait?
             }
-            startTag = bb.toString("ASCII");
 
-        } finally {
-            try {
-//                if (fis != null) {
-//                    fis.close();
-//                }
-                if (stream != null) {
-                    stream.close();
+            byteBuffer.flip();
+            psidev.psi.tools.xxindex.index.ByteBuffer psiByteBuffer = new psidev.psi.tools.xxindex.index.ByteBuffer();
+            while (byteBuffer.hasRemaining()) {
+                byte aByte = byteBuffer.get();
+                psiByteBuffer.append(aByte);
+                if ((char) aByte == '>') {
+                    startTag = psiByteBuffer.toString("ASCII");
+                    break;
                 }
-            } catch (IOException e) {
-                // ignore
             }
         }
 
