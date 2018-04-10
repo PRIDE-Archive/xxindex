@@ -282,7 +282,7 @@ public class StandardXpathAccess implements XpathAccess {
             }		
              startTag = bb.toString("ASCII");
         } else {
-            java.nio.ByteBuffer byteBuffer = java.nio.ByteBuffer.allocate(1024);
+            java.nio.ByteBuffer byteBuffer = java.nio.ByteBuffer.allocate(2048);
             Future<Integer> results = asynchFileChannel.read(byteBuffer, startPos);
             while (!results.isDone()) {
                 // TODO - Would it be possible to find another way of waiting for results different from busy wait?
@@ -299,7 +299,9 @@ public class StandardXpathAccess implements XpathAccess {
                 }
             }
         }
-
+        if (startTag == null) {
+            logger.warn("No start tag found in line number: " + element.getLineNumber());
+        }
         return startTag;
     }
 
