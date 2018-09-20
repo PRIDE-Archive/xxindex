@@ -79,15 +79,22 @@
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>2.4</version>
+            <version>2.6</version>
         </dependency>
 
         <!-- for file encoding detection -->
         <dependency>
             <groupId>net.sourceforge.cpdetector</groupId>
             <artifactId>cpdetector</artifactId>
-            <version>1.0.7</version>
+            <version>1.0.10</version>
         </dependency>
+		
+        <!-- for charset detection -->
+		<dependency>
+			<groupId>org.mozilla.intl</groupId>
+			<artifactId>chardet</artifactId>
+			<version>1.0</version>
+		</dependency>
 
         <!-- for unit testing -->
         <dependency>
