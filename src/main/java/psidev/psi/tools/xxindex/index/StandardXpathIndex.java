@@ -137,17 +137,24 @@ public class StandardXpathIndex implements XpathIndex {
         return cnt;
     }
 
+    /**
+     * Checks, if xpath is indexed.
+     * @param xpath the XPath
+     * @return true, if xpath is indexed; else false
+     */
+    @Override
     public boolean containsXpath(String xpath) {
-        if(xpath.endsWith("/")) {
+        if (xpath != null && xpath.endsWith("/")) {
             xpath = xpath.substring(0, xpath.length()-1);
         }
+        
         boolean result = false;
-        if(index.containsKey(xpath)) {
-            int size = index.get(xpath).size();
-            if(size > 0) {
+        if (this.index.containsKey(xpath)) {
+            if (this.index.get(xpath).size() > 0) {
                 result = true;
             }
         }
+        
         return result;
     }
 
