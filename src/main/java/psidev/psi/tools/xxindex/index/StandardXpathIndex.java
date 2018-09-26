@@ -50,10 +50,12 @@ public class StandardXpathIndex implements XpathIndex {
         if(aXpathInclusionSet != null) {
             xpathInclusionSet = new HashSet<String>(aXpathInclusionSet.size());
             for (String s : aXpathInclusionSet) {
-                if (s.endsWith("/")) {
-                    s = s.substring(0, s.length() - 1);
-                }
-                xpathInclusionSet.add(s);
+				if (s != null) {
+					if (s.endsWith("/")) {
+						s = s.substring(0, s.length() - 1);
+					}
+					xpathInclusionSet.add(s);
+				}
             }
         }
         this.recordLineNumber = true;
