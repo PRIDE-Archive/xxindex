@@ -7,19 +7,19 @@ package psidev.psi.tools.xxindex.index;
  */
 public interface IndexElement {
 
-    public static final long NO_LINE_NUMBER = -1;
+    long NO_LINE_NUMBER = -1;
 
-    public void setValues(long start, long stop, long lineNumber);
+    void setValues(long start, long stop, long lineNumber);
 
-    public long getStart();
-    public void setStart(long start);
+    long getStart();
+    void setStart(long start);
 
-    public long getStop();
-    public void setStop(long stop);
+    long getStop();
+    void setStop(long stop);
 
-    public long getLineNumber();
-    public void setLineNumber( long lineNumber);
+    long getLineNumber();
+    void setLineNumber(long lineNumber);
 
-    public boolean hasLineNumber();
+    boolean hasLineNumber();
 
 }

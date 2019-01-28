@@ -20,7 +20,7 @@ public class SimpleXmlElementExtractorTest {
 
 
         // test cases where encoding is present (various format alternatives, but same encoding string)
-        List<String> positiveCases = new ArrayList<String>();
+        List<String> positiveCases = new ArrayList<>();
         positiveCases.add("<?xml version='1.1' encoding='ASCII' ?>");
         positiveCases.add("<?xml version=\"1.1\" encoding=\"ASCII\" ?>");
         positiveCases.add("  <?xml version='1.1' encoding='ASCII' ?>  ");
@@ -40,7 +40,7 @@ public class SimpleXmlElementExtractorTest {
         }
 
         // test cases where encoding is present and the encoding string is different
-        List<String> positiveCases2 = new ArrayList<String>();
+        List<String> positiveCases2 = new ArrayList<>();
         positiveCases2.add("<?xml version='1.1' encoding='UTF-8' ?>");
         positiveCases2.add("<?xml version=\"1.1\" encoding=\"ASCII\" ?>");
         positiveCases2.add("  <?xml version='1.1' encoding='ISO-8859-1' ?>  ");
@@ -61,7 +61,7 @@ public class SimpleXmlElementExtractorTest {
 
 
         // test cases where the encoding is not present
-        List<String> negativeCases = new ArrayList<String>();
+        List<String> negativeCases = new ArrayList<>();
         negativeCases.add("  <?xml version='1.1'?>  ");
         negativeCases.add("  <?xml ?>  ");
 

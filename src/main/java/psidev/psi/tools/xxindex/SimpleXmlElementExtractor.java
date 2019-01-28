@@ -155,10 +155,8 @@ public class SimpleXmlElementExtractor implements XmlElementExtractor {
      *                                  is to big (> Integer.MAX_VALUE characters).
      */
     public byte[] readBytes(long from, long to, File file) throws IOException {
-        RandomAccessFile raf = null;
         byte[] bytes;
-        try {
-            raf = new RandomAccessFile(file, "r");
+        try (RandomAccessFile raf = new RandomAccessFile(file, "r")) {
             // go to specified start position
             raf.seek(from);
             Long length = to - from;
@@ -169,10 +167,6 @@ public class SimpleXmlElementExtractor implements XmlElementExtractor {
 
             // read into buffer
             raf.read(bytes, 0, length.intValue());
-        } finally {
-            if (raf != null) {
-                raf.close();
-            }
         }
         return bytes;
     }

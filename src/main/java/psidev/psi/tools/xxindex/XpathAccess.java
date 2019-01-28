@@ -12,11 +12,11 @@ import java.util.List;
  */
 public interface XpathAccess {
 
-    public List<String> getXmlSnippets(String xpath) throws IOException;
+    List<String> getXmlSnippets(String xpath) throws IOException;
 
-    public Iterator<String> getXmlSnippetIterator(String xpath);
+    Iterator<String> getXmlSnippetIterator(String xpath);
 
-    public Iterator<String> getXmlSnippetIterator(String xpath, Long start, Long stop);
+    Iterator<String> getXmlSnippetIterator(String xpath, Long start, Long stop);
 
     XpathIndex getIndex();
 }

@@ -31,7 +31,7 @@ public class BuildTagNameTest {
     }
 
     private List<ByteBuffer> createTestByteBuffer() throws URISyntaxException, IOException {
-        List<ByteBuffer> bBuf = new ArrayList<ByteBuffer>();
+        List<ByteBuffer> bBuf = new ArrayList<>();
         URL url = BuildTagNameTest.class.getResource( "/testTagName" );
         File testDir = new File( url.toURI() ); // get the directory of the test files
         File[] files = testDir.listFiles();

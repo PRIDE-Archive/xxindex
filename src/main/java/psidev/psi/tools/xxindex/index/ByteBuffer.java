@@ -15,7 +15,7 @@ public class ByteBuffer implements Iterable<Byte>{
     private List<Byte> buffer;
 
     public ByteBuffer() {
-        buffer = new ArrayList<Byte>();
+        buffer = new ArrayList<>();
     }
 
     public void append(byte b) {
@@ -43,7 +43,7 @@ public class ByteBuffer implements Iterable<Byte>{
         // Dimension the resulting array.
         byte[] result =  new byte[liSize];
         for(int i=0;i<liSize;i++) {
-            result[i] = buffer.get(i).byteValue();
+            result[i] = buffer.get(i);
         }
         return result;
     }
@@ -74,7 +74,7 @@ public class ByteBuffer implements Iterable<Byte>{
 
     // for testing only
     protected String toStringByteByByte() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         for (Byte aByte : buffer) {
             byte[] b = new byte[1];
             b[0] = aByte;

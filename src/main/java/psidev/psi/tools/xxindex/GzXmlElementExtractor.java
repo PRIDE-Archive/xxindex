@@ -150,10 +150,8 @@ public class GzXmlElementExtractor implements XmlElementExtractor {
         }
 
         // create a input stream on a gz compressed file with 1MB buffer size
-        GZIPInputStream gzis = null;
         byte[] bytes;
-        try {
-            gzis = new GZIPInputStream(new FileInputStream(file), 1048576);
+        try (GZIPInputStream gzis = new GZIPInputStream(new FileInputStream(file), 1048576)) {
             BufferedInputStream bis = new BufferedInputStream(gzis);
 
             long actuallySlipped = bis.skip(from);
@@ -169,10 +167,6 @@ public class GzXmlElementExtractor implements XmlElementExtractor {
 
             // read into buffer
             bis.read(bytes, 0, length.intValue());
-        } finally {
-            if (gzis != null) {
-                gzis.close();
-            }
         }
 
         return bytes;

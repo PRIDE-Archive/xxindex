@@ -86,10 +86,9 @@ public class PsiMiIndexingTest {
 
             // Build an InputStream with this
             StringBuilder sb = new StringBuilder( charCount );
-            for ( int i = 0; i < buf.length; i++ ) {
-                char c = buf[i];
-                sb.append( c );
-            }
+        for (char c : buf) {
+            sb.append(c);
+        }
 
             System.out.println("XML DATA:\n"+sb.toString());
 

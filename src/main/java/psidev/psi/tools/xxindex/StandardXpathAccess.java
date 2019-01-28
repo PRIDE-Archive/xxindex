@@ -113,6 +113,7 @@ public class StandardXpathAccess implements XpathAccess {
         if (enc != null) {
             extractor.setEncoding(enc);
         }
+        fis.close();
     }
 
     ////////////////////
@@ -173,7 +174,7 @@ public class StandardXpathAccess implements XpathAccess {
      * @see this#getXmlSnippets(String)
      */
     public List<String> getXmlSnippets(String xpath, Long start, Long stop) throws IOException {
-        List<String> results = new ArrayList<String>();
+        List<String> results = new ArrayList<>();
         // check xpath
         // check if xpath in index
         if (index.containsXpath(xpath)) {
@@ -257,7 +258,7 @@ public class StandardXpathAccess implements XpathAccess {
 
         long startPos = element.getStart();
 
-        InputStream stream = null;
+        InputStream stream;
         if (asynchFileChannel == null || !asynchFileChannel.isOpen()) {
             asynchFileChannel = AsynchronousFileChannel.open(file.toPath(), StandardOpenOption.READ);
         }
@@ -327,7 +328,7 @@ public class StandardXpathAccess implements XpathAccess {
             if (start == null && stop == null) {
                 validElements = elements;
             } else { // if at least one border is specified, we need a new list containing only valid elements
-                validElements = new ArrayList<IndexElement>();
+                validElements = new ArrayList<>();
                 // iterate over the initial list and add only the valid elements to the new list
                 for (IndexElement element : elements) {
                     if ((start == null || element.getStart() >= start) && (stop == null || element.getStop() <= stop)) {
@@ -396,7 +397,7 @@ public class StandardXpathAccess implements XpathAccess {
      * @see this#getXmlSnippets(String, Long, Long)
      */
     public List<XmlElement> getXmlElements(String xpath, Long start, Long stop) throws IOException {
-        List<XmlElement> results = new ArrayList<XmlElement>();
+        List<XmlElement> results = new ArrayList<>();
         // check xpath
         // check if xpath in index
         // if yes, transform (range + line number) into (xml snippet + line number)
@@ -480,7 +481,7 @@ public class StandardXpathAccess implements XpathAccess {
             if (start == null && stop == null) {
                 validElements = elements;
             } else { // if at least one borders is specified, we need a new list containing only valid elements
-                validElements = new ArrayList<IndexElement>();
+                validElements = new ArrayList<>();
                 // iterate over the initial list and only add the valid elements to the new list
                 for (IndexElement element : elements) {
                     if ((start == null || element.getStart() >= start) && (stop == null || element.getStop() <= stop)) {

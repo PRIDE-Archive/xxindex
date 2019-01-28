@@ -38,7 +38,7 @@ public class NumberOfElementsTest {
     // Utilities
 
     private List<File> getTestFileList(File dir, String filePrefix) {
-        List<File> files = new ArrayList<File>();
+        List<File> files = new ArrayList<>();
         File[] fileArray = new File[0]; // initialise with empty array
         if ( !dir.isDirectory() ) {
             System.out.println("Parameter has to be a valid directory name: " + dir.getName());

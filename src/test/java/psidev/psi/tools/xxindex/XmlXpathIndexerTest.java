@@ -39,7 +39,7 @@ public class XmlXpathIndexerTest {
     }
 
     private List<String> createTestFileList() {
-        List<String> fileList = new ArrayList<String>();
+        List<String> fileList = new ArrayList<>();
 
         fileList.add( "/test-ascii-wrong-header.xml" );
         fileList.add( "/test-ascii-wrong-header-flat.xml" );
@@ -128,7 +128,7 @@ public class XmlXpathIndexerTest {
         List<String> fileList = createTestFileList();
 
         // ----- Create an inclusion set in this case ----- //
-        HashSet<String> xpathInclusionSet = new HashSet<String>( 2 );
+        HashSet<String> xpathInclusionSet = new HashSet<>(2);
         xpathInclusionSet.add( "/first/second" );
         xpathInclusionSet.add( "/first/second/third/" );
 
@@ -235,8 +235,10 @@ public class XmlXpathIndexerTest {
         // A mzIdentML file usually contains regular expressions stored in XML CDATA sections
         // Here we test a mzIdentML file that contains CDATA sections.
 
-        URL url = XmlXpathIndexerTest.class.getClassLoader().getResource("test-mzIdentML-CDATA.mzid");
-        Assert.assertNotNull("Test resource (test-mzIdentML-CDATA.mzid) not found.", url);
+        long time = System.currentTimeMillis();
+
+        URL url = XmlXpathIndexerTest.class.getClassLoader().getResource("1.mzid");
+        Assert.assertNotNull("Test resource (1.mzid) not found.", url);
 
         File xmlFile = new File(url.toURI());
         Assert.assertTrue("Test file does not exist!", xmlFile.exists());
@@ -247,20 +249,22 @@ public class XmlXpathIndexerTest {
 
         // check if entries for all xpath have been created
         XpathIndex index = access.getIndex();
-        Assert.assertEquals("Expected xpath", 109, index.getKeys().size());
+        Assert.assertEquals("Expected xpath", 71, index.getKeys().size());
 //        System.out.println("number of xpath: " + index.getKeys().size());
 //        for (String xpath : index.getKeys()) {
 //            System.out.println("xpath: " + xpath);
 //        }
 
         // now check if new lines in CDATA sections are taken into account correctly
-        IndexElement ele1 = index.getElements("/mzIdentML/AnalysisProtocolCollection/SpectrumIdentificationProtocol/Enzymes/Enzyme").iterator().next();
+        IndexElement ele1 = index.getElements("/MzIdentML/SequenceCollection/DBSequence").iterator().next();
         // the first Enzyme element should start at line 748 (before any CDATA section)
-        Assert.assertEquals("Element not on expected line.", 748, ele1.getLineNumber());
+        Assert.assertEquals("Element not on expected line.", 62, ele1.getLineNumber());
 
-        IndexElement ele2 = index.getElements("/mzIdentML/AnalysisProtocolCollection/SpectrumIdentificationProtocol/MassTable").iterator().next();
+        IndexElement ele2 = index.getElements("/MzIdentML/DataCollection/AnalysisData/SpectrumIdentificationList/SpectrumIdentificationResult/SpectrumIdentificationItem").iterator().next();
         // the first MassTable element should start at line 763 (after CDATA with line breaks)
-        Assert.assertEquals("Element not on expected line.", 766, ele2.getLineNumber());
+        Assert.assertEquals("Element not on expected line.", 180917, ele2.getLineNumber());
+
+        System.out.println(System.currentTimeMillis()-time);
 
     }
 

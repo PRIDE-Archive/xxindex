@@ -86,7 +86,7 @@
         <dependency>
             <groupId>net.sourceforge.cpdetector</groupId>
             <artifactId>cpdetector</artifactId>
-            <version>1.0.10</version>
+            <version>1.0.7</version>
         </dependency>
 		
         <!-- for charset detection -->

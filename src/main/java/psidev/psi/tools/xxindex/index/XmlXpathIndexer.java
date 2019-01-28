@@ -11,7 +11,6 @@ import java.io.InputStream;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ListIterator;
 import java.util.Set;
 import java.util.Stack;
 
@@ -144,7 +143,7 @@ public class XmlXpathIndexer {
 
         index.setRecordLineNumber(recordLineNumber);
 
-        Stack<TmpIndexElement> stack = new Stack<TmpIndexElement>();
+        Stack<TmpIndexElement> stack = new Stack<>();
         byte[] buf = new byte[1];
         byte read = ' ';
         byte oldRead;
@@ -228,9 +227,7 @@ public class XmlXpathIndexer {
                         sb.append("Tag name mismatch! Found '").append(tagName);
                         sb.append("' but '").append(element.getName()).append("' on stack.");
                         sb.append( "\n State of the Stack:\n" );
-                        ListIterator<TmpIndexElement> iter = stack.listIterator();
-                        while (iter.hasNext()) {
-                            TmpIndexElement tmpIndexElement = iter.next();
+                        for (TmpIndexElement tmpIndexElement : stack) {
                             sb.append("[");
                             sb.append(tmpIndexElement.getName());
                             sb.append(" at line ");
@@ -372,7 +369,7 @@ public class XmlXpathIndexer {
             bbTmp.append(aByte);
 
             if (ignoreNSPrefix && aByte == ':') {
-                // if we encouter a ':' we have a namespace prefix
+                // if we encounter a ':' we have a namespace prefix
                 // since we do not handle this, we just get rid of it: all the characters
                 // in the byte buffer (including the current ':') are prefix and have to be removed
                 bbTmp.clear();

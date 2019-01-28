@@ -40,7 +40,7 @@ public class EncodingTest {
     }
 
     private List<String> createTestFileList() {
-        List<String> fileList = new ArrayList<String>();
+        List<String> fileList = new ArrayList<>();
 
         fileList.add( "/test-win1252-wo-header.xml" );
         fileList.add( "/test-win1252-wo-header-flat.xml" );

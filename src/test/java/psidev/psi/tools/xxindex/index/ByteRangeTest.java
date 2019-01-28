@@ -1,6 +1,5 @@
 package psidev.psi.tools.xxindex.index;
 
-import static org.junit.Assert.*;
 import org.junit.*;
 
 /**

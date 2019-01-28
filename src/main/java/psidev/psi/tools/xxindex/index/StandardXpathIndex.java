@@ -42,13 +42,13 @@ public class StandardXpathIndex implements XpathIndex {
      *                              inclusion of all xpaths.
      */
     public StandardXpathIndex(Set<String> aXpathInclusionSet) {
-        index = new HashMap<String, List<IndexElement>>();
+        index = new HashMap<>();
         // If we have a 'non-null' inclusion set, check it for trailing '/'
         // while initializing the inclusion set instance variable.
         // If the inclusion set is 'null', leave the instance variable 'null'as well -
         // it will then be ignored.
         if(aXpathInclusionSet != null) {
-            xpathInclusionSet = new HashSet<String>(aXpathInclusionSet.size());
+            xpathInclusionSet = new HashSet<>(aXpathInclusionSet.size());
             for (String s : aXpathInclusionSet) {
 				if (s != null) {
 					if (s.endsWith("/")) {
@@ -81,12 +81,7 @@ public class StandardXpathIndex implements XpathIndex {
         if(xpath.endsWith("/")) {
             xpath = xpath.substring(0, xpath.length()-1);
         }
-        List<IndexElement> list = index.get(xpath);
-        if (list == null) {
-            list = new ArrayList<IndexElement>();
-            index.put(xpath, list);
-        }
-        return list;
+        return index.computeIfAbsent(xpath, k -> new ArrayList<>());
     }
 
     public void put(String path, long start, long stop) {
@@ -161,7 +156,7 @@ public class StandardXpathIndex implements XpathIndex {
     }
 
     public String toString() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         for ( String key : index.keySet() ) {
             List<IndexElement> entries = getElements(key);
             sb.append("xPath: ");
@@ -173,7 +168,7 @@ public class StandardXpathIndex implements XpathIndex {
     }
 
     public String print() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         for ( String key : index.keySet() ) {
             List<IndexElement> entries = getElements(key);
             sb.append("xPath: ");
