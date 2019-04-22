@@ -20,4 +20,5 @@ public interface XmlElementExtractor {
 
     String detectFileEncoding(URL fileLocation, int length) throws IOException;
 
+    default void releaseResources(){/*noop*/}
 }
