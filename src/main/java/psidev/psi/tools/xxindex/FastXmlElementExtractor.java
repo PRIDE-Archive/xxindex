@@ -29,7 +29,7 @@ import psidev.psi.tools.xxindex.index.IndexElement;
  * constructor and remains open during the lifetime of the class. The file
  * is closed in the finalize() method, when this class is collected by the 
  * garbage collector.  
- * 
+ *
  * @author Florian Reisinger
  *         Date: 21-Oct-2010
  * @since 0.10
@@ -51,6 +51,7 @@ public class FastXmlElementExtractor implements XmlElementExtractor {
     private boolean useSystemDefaultEncoding;
     private Charset encoding;
     private final RandomAccessFile raf;
+    private String mzmlFileName;
 
 
     ////////////////////
@@ -58,32 +59,46 @@ public class FastXmlElementExtractor implements XmlElementExtractor {
 
     /**
      * Default constructor setting the default character encoding to 'ASCII'.
-     * @throws FileNotFoundException 
+     * @throws FileNotFoundException
      */
     public FastXmlElementExtractor(File file) throws FileNotFoundException {
         setUseSystemDefaultEncoding(false);
         setEncoding(Charset.forName("ASCII"));
         raf = new RandomAccessFile(file, "r");
+        this.mzmlFileName = file.getName();
     }
 
     /**
      * Constructor overwriting the default character encoding with the specified one.
      *
      * @param encoding The Charset to use to translate the read bytes.
-     * @throws FileNotFoundException 
+     * @throws FileNotFoundException
      */
     public FastXmlElementExtractor(File file, Charset encoding) throws FileNotFoundException {
         this(file);
         setEncoding(encoding);
     }
-    
+
     /**
-     * Close the underlying RandomAccessFile when this class is garbage collected 
+     * Close the underlying RandomAccessFile when this class is garbage collected
      */
     @Override
     protected void finalize() throws Throwable {
         super.finalize();
         if (raf != null) raf.close();
+    }
+
+    /**
+     * Manually close underlying RandomAccessFile
+     */
+    @Override public void releaseResources() {
+        if (this.raf != null) {
+            try {
+                this.raf.close();
+            } catch (IOException e) {
+                log.error("Can't close {}", mzmlFileName);
+            }
+        }
     }
 
     ////////////////////
@@ -102,7 +117,7 @@ public class FastXmlElementExtractor implements XmlElementExtractor {
     public void setEncoding(Charset encoding) {
         this.encoding = encoding;
     }
-    
+
     /**
      * This method will try to find and set a Charset for the given String.
      *
@@ -172,7 +187,7 @@ public class FastXmlElementExtractor implements XmlElementExtractor {
      */
     public synchronized byte[] readBytes(long from, long to, File file) throws IOException {
         byte[] bytes;
-        
+
         // go to specified start position
         raf.seek(from);
         Long length = to - from;
@@ -180,10 +195,10 @@ public class FastXmlElementExtractor implements XmlElementExtractor {
             throw new IllegalArgumentException("Can not read more than " + Integer.MAX_VALUE + " bytes!");
         }
         bytes = new byte[length.intValue()];
-                
+
         // read into buffer
         raf.read(bytes, 0, length.intValue());
-        
+
         return bytes;
     }
 
@@ -231,7 +246,7 @@ public class FastXmlElementExtractor implements XmlElementExtractor {
      *
      * @param fileLocation The location of the file to check.
      * @param maxReadLength The maximum number of bytes to read from the file.
-     * @return A String representing the Charset detected for the provided 
+     * @return A String representing the Charset detected for the provided
      *         file or null if no character encoding could be determined.
      * @throws IOException If the specified location could not be opened for reading.
      */

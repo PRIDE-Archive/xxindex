@@ -130,6 +130,8 @@ public class StandardXpathAccess implements XpathAccess {
         return index;
     }
 
+    public XmlElementExtractor getExtractor() { return extractor; }
+
     public boolean isIgnoreNSPrefix() {
         return ignoreNSPrefix;
     }
