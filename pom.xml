@@ -118,7 +118,7 @@
         <!-- This repo is required for cpdetector -->
         <repository>
             <id>sammoa-group</id>
-            <url>http://maven.nuiton.org/nexus/content/repositories/sammoa-group/</url>
+            <url>https://maven.nuiton.org/nexus/content/repositories/sammoa-group/</url>
         </repository>
     </repositories>
 
